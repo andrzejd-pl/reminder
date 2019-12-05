@@ -8,6 +8,7 @@
 -record(event, {name="",
                 description="",
                 pid,
+                client_pid,
                 timeout={{1970,1,1},{0,0,0}}}).
 
 %%% User Interface
@@ -98,6 +99,7 @@ loop(S=#state{}) ->
                                               #event{name=Name,
                                                      description=Description,
                                                      pid=EventPid,
+                                                     client_pid=Pid,
                                                      timeout=TimeOut},
                                               S#state.events),
                     Pid ! {MsgRef, ok},
@@ -120,7 +122,7 @@ loop(S=#state{}) ->
             case orddict:find(Name, S#state.events) of
                 {ok, E} ->
                     send_to_clients({done, E#event.name, E#event.description},
-                                    S#state.clients),
+                                    E#event.client_pid),
                     NewEvents = orddict:erase(Name, S#state.events),
                     loop(S#state{events=NewEvents});
                 error ->
@@ -144,8 +146,8 @@ loop(S=#state{}) ->
 
 
 %%% Internal Functions
-send_to_clients(Msg, ClientDict) ->
-    orddict:map(fun(_Ref, Pid) -> Pid ! Msg end, ClientDict).
+send_to_clients(Msg, ClientPid) ->
+    ClientPid ! Msg.
 
 valid_datetime({Date,Time}) ->
     try
