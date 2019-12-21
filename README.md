@@ -1,6 +1,9 @@
 # reminder
 
 This is clone reaminder application from [learnyousomeerlang.com](https://learnyousomeerlang.com/).
+I modified the application about notifing only a client, which add a event.
+
+Original app is in `original` tag.
 
 ## Compile
 
